@@ -1451,13 +1451,11 @@
 		},
 
 		_disable: function () {
-			var that = this;
-
 			// Close open tooltips
-			$.each(this.tooltips, function (id, tooltipData) {
+			$.each(this.tooltips, (id, tooltipData) => {
 				var event = $.Event("blur");
 				event.target = event.currentTarget = tooltipData.element[0];
-				that.close(event, true);
+				this.close(event, true);
 			});
 
 			// Remove title attributes to prevent native tooltips
@@ -1475,7 +1473,6 @@
 		},
 
 		_enable: function () {
-
 			// restore title attributes
 			this.disabledTitles.each(function () {
 				var element = $(this);
@@ -1656,7 +1653,13 @@
 		_registerCloseHandlers: function (event, target) {
 			var events = {
 				keyup: function (event) {
-					if (event.keyCode === $.ui.keyCode.ESCAPE) {
+					const validKeycodes = [
+						$.ui.keyCode.ESCAPE,
+						$.ui.keyCode.ENTER,
+						$.ui.keyCode.SPACE,
+					];
+
+					if (validKeycodes.includes(event.keyCode)) {
 						var fakeEvent = $.Event(event);
 						fakeEvent.currentTarget = target[0];
 						this.close(fakeEvent, true);
@@ -1675,12 +1678,15 @@
 				};
 			}
 
-			if (!event || event.type === "mouseover") {
+			if (event && event.type === "mouseover") {
 				events.mouseleave = "close";
+				events.click = "close";
 			}
-			if (!event || event.type === "focusin") {
+			if (event && event.type === "focusin") {
 				events.focusout = "close";
+				events.click = "close";
 			}
+
 			this._on(true, target, events);
 		},
 
@@ -1727,7 +1733,7 @@
 			});
 
 			target.removeData("ui-tooltip-open");
-			this._off(target, "mouseleave focusout keyup");
+			this._off(target, "mouseleave focusout keyup click");
 
 			// Remove 'remove' binding only on delegated targets
 			if (target[0] !== this.element[0]) {
@@ -1839,8 +1845,4 @@
 	}
 
 	var widgetsTooltip = $.ui.tooltip;
-
-
-
-
 });
