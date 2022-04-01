@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="us">
+<head>
+	<meta charset="utf-8">
+	<title>jQuery UI Example Page</title>
+	<link href="jquery-ui.css" rel="stylesheet">
+	<style>
+		body{
+			display: grid;
+			padding: 0;
+			margin: 0;
+			height: 100vh;
+			width: 100vw;
+		}
+
+		.container {
+			position: relative;
+			display: grid;
+			place-items: center;
+			grid-auto-rows: min-content;
+		}
+
+		button {
+			padding: 8px 16px;
+		}
+
+		.ui-tooltip {
+			border-radius: 4px;
+			background: rgb(242, 241, 233);
+			color: black;
+			border: none;
+			padding: 6px 16px;
+			opacity: 1;
+			box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.039), 0px 0.5px 1.5px 1px rgba(0, 0, 0, 0.19);
+		}
+		.ui-tooltip-content {
+			position: relative;
+		}
+	</style>
+</head>
+<body>
+
+
+<div class="container">
+	<button onclick="disableButton()">undisable</button>
+	<button id="testbutton" onclick="disableButton()" title="this is the button title">BUTTON</button>
+</div>
+
+
+<script src="external/jquery/jquery.js"></script>
+<script src="jquery-ui.js"></script>
+<script>
+$( document ).tooltip();
+
+const disableButton = () => {
+	console.log('disabling');
+	document.getElementById('testbutton').toggleAttribute('disabled');
+}
+
+</script>
+</body>
+</html>
