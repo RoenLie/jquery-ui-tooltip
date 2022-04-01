@@ -1353,6 +1353,7 @@
 	//>>css.structure: ../../themes/base/tooltip.css
 	//>>css.theme: ../../themes/base/theme.css
 
+	const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 	$.widget("ui.tooltip", {
 		version: "1.13.1",
@@ -1659,11 +1660,24 @@
 						$.ui.keyCode.SPACE,
 					];
 
-					if (validKeycodes.includes(event.keyCode)) {
-						var fakeEvent = $.Event(event);
-						fakeEvent.currentTarget = target[0];
+					if (!validKeycodes.includes(event.keyCode))
+						return;
+
+					const fakeEvent = $.Event(event);
+					fakeEvent.currentTarget = target[0];
+
+					if ([$.ui.keyCode.ENTER, $.ui.keyCode.SPACE].includes(event.keyCode) &&
+						!fakeEvent.target.disabled) return;
+
+					this.close(fakeEvent, true);
+				},
+				click: async function (event) {
+					await sleep();
+
+					const fakeEvent = $.Event(event);
+					fakeEvent.currentTarget = target[0];
+					if (fakeEvent.target.disabled)
 						this.close(fakeEvent, true);
-					}
 				}
 			};
 
@@ -1678,14 +1692,10 @@
 				};
 			}
 
-			if (event && event.type === "mouseover") {
+			if (event && event.type === "mouseover")
 				events.mouseleave = "close";
-				events.click = "close";
-			}
-			if (event && event.type === "focusin") {
+			if (event && event.type === "focusin")
 				events.focusout = "close";
-				events.click = "close";
-			}
 
 			this._on(true, target, events);
 		},
