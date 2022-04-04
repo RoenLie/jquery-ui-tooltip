@@ -1667,7 +1667,7 @@
 					fakeEvent.currentTarget = target[0];
 
 					if ([$.ui.keyCode.ENTER, $.ui.keyCode.SPACE].includes(event.keyCode) &&
-						!fakeEvent.target.disabled) return;
+						!fakeEvent.currentTarget.disabled) return;
 
 					this.close(fakeEvent, true);
 				},
@@ -1676,7 +1676,7 @@
 
 					const fakeEvent = $.Event(event);
 					fakeEvent.currentTarget = target[0];
-					if (fakeEvent.target.disabled)
+					if (fakeEvent.currentTarget.disabled)
 						this.close(fakeEvent, true);
 				}
 			};
