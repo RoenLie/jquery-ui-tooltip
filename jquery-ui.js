@@ -1658,6 +1658,10 @@
 						$.ui.keyCode.ESCAPE,
 						$.ui.keyCode.ENTER,
 						$.ui.keyCode.SPACE,
+						$.ui.keyCode.LEFT,
+						$.ui.keyCode.RIGHT,
+						$.ui.keyCode.UP,
+						$.ui.keyCode.DOWN,
 					];
 
 					if (!validKeycodes.includes(event.keyCode))
@@ -1666,11 +1670,13 @@
 					const fakeEvent = $.Event(event);
 					fakeEvent.currentTarget = target[0];
 
-					if ([$.ui.keyCode.ENTER, $.ui.keyCode.SPACE].includes(event.keyCode) &&
-						!fakeEvent.currentTarget.disabled) return;
-
 					this.close(fakeEvent, true);
 				},
+				//keyup: function (event) {
+				//	const fakeEvent = $.Event(event);
+				//	fakeEvent.currentTarget = target[0];
+				//	this.close(fakeEvent, true);
+				//},
 				click: async function (event) {
 					await sleep();
 
