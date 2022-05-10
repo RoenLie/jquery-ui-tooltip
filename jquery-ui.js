@@ -127,6 +127,20 @@ class DOMQuery {
 		return new Function(`return ${queryFnString}`);
 	}
 
+	static isInDocument(element) {
+		var currentElement = element;
+		while (currentElement && currentElement.parentNode) {
+			if (currentElement.parentNode === document) {
+				return true;
+			} else if (currentElement.parentNode instanceof DocumentFragment) {
+				currentElement = currentElement.parentNode.host;
+			} else {
+				currentElement = currentElement.parentNode;
+			}
+		}
+		return false;
+	}
+
 }
 
 
@@ -1779,13 +1793,11 @@ class DOMQuery {
 		},
 
 		_registerCloseHandlers: function (event, target) {
-			const originalEvent = event.originalEvent;
-			const queryFn = DOMQuery.createQuery(originalEvent);
-
 			// queries to see if the element still exists.
 			// remove the tooltip if the element can no longer be queried
 			const queryInterval = setInterval(() => {
-				if (queryFn())
+				const exists = DOMQuery.isInDocument(target[0]);
+				if (exists)
 					return;
 
 				closeTooltip();
