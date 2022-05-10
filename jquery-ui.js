@@ -3,6 +3,133 @@
 * Includes: widget.js, position.js, keycode.js, unique-id.js, widgets/tooltip.js
 * Copyright jQuery Foundation and other contributors; Licensed MIT */
 
+
+class DOMQuery {
+	static _isString(x) {
+		return Object.prototype.toString.call(x) === "[object String]";
+	}
+
+	static _generateInitialPath(ev) {
+		const pathBuilder = [];
+
+		const startingElement = ev.path[0];
+
+		let currentElement = startingElement;
+
+		const maxInterations = 9999;
+		let currentIteration = 0;
+
+		let nodeName = startingElement.nodeName;
+		while (nodeName != "HTML" && currentIteration < maxInterations) {
+			pathBuilder.push(currentElement);
+
+			if (currentElement instanceof ShadowRoot) {
+				currentElement = currentElement.host;
+			} else {
+				currentElement = currentElement.parentNode;
+			}
+
+			nodeName = currentElement.nodeName;
+			currentIteration++;
+		}
+
+		return {
+			path: pathBuilder.reverse(),
+			length: pathBuilder.length
+		};
+	}
+
+	static _buildPath(composedPath, composedPathLength, position, queryString) {
+		//#region | Loop through composed path nodeList and insert objects that contain the element type and value
+		let queryFnString = queryString || [];
+		let composedPathPosition = position || 0;
+		for (
+			let i = composedPathPosition;
+			i < composedPathLength;
+			i++
+		) {
+			const fragment = composedPath[i];
+
+			if (fragment.nodeName == "HTML") continue;
+			if (fragment.nodeName == "SLOT") continue;
+
+			//#region | if element is a ShadowRoot
+			if (fragment instanceof ShadowRoot) {
+				// console.log(fragment, " is a shadow root, position: ", i);
+
+				queryFnString.push({
+					type: "ShadowRoot",
+					value: `").shadowRoot.querySelector("`,
+				});
+				composedPathPosition = i + 1;
+				queryFnString.push(this._buildPath(composedPath, composedPathLength, composedPathPosition, queryFnString));
+				return;
+			}
+			//#endregion
+
+			//#region | if element is not a ShadowRoot
+			let fragmentIndex = 0;
+			if (fragment.parentNode)
+				fragmentIndex = [].indexOf.call(fragment.parentNode.children, fragment) + 1; // no idea why +1
+
+			const element = fragment.localName;
+
+			let className = "";
+			if (this._isString(fragment.className))
+				className = fragment.className.replace(/ /g, ".");
+
+			const fragmentBuilder = [];
+			if (element)
+				fragmentBuilder.push(element);
+			if (className && fragmentIndex === 0)
+				fragmentBuilder.push(className);
+
+			let fragmentPath = fragmentBuilder.join(".");
+
+			if (fragmentIndex > 0)
+				fragmentPath += ":nth-child(" + fragmentIndex + ")";
+
+			queryFnString.push({
+				type: "Element",
+				value: fragmentPath,
+			});
+			//#endregion
+		}
+		//#endregion
+
+		//#region | Filter the path array to remove any invalid elements
+		queryFnString = queryFnString.filter((fragment) => fragment.value != "undefined" && fragment.value > "");
+		//#endregion
+
+		//#region | Map and join together the path array.
+		queryFnString = queryFnString.map((pathObject, index, self) => {
+			if (
+				index > 0 &&
+				self[index - 1].type != "ShadowRoot" &&
+				pathObject.type != "ShadowRoot"
+			)
+				return " > " + pathObject.value;
+			else return pathObject.value;
+		}).join("");
+		//#endregion
+
+		//#region | Add beginning and end of query selector function
+		return `document.querySelector("` + queryFnString + `")`;
+		//#endregion
+	}
+
+	static createQuery(ev) {
+		const { path, length } = this._generateInitialPath(ev);
+		const queryFnString = this._buildPath(path, length);
+
+		// since it supports shadow dom elements, the string needs
+		// to be converted into a function before it can be used
+		return new Function(`return ${queryFnString}`);
+	}
+
+}
+
+
 (function (factory) {
 	"use strict";
 
@@ -1652,8 +1779,28 @@
 		},
 
 		_registerCloseHandlers: function (event, target) {
+			const originalEvent = event.originalEvent;
+			const queryFn = DOMQuery.createQuery(originalEvent);
+
+			// queries to see if the element still exists.
+			// remove the tooltip if the element can no longer be queried
+			const queryInterval = setInterval(() => {
+				if (queryFn())
+					return;
+
+				closeTooltip();
+				clearInterval(queryInterval);
+			}, 1000);
+
+			const closeTooltip = (event) => {
+				const fakeEvent = $.Event(event);
+				fakeEvent.currentTarget = target[0];
+				clearInterval(queryInterval);
+				this.close(fakeEvent, true);
+			};
+
 			var events = {
-				keyup: function (event) {
+				keyup: (event) => {
 					const validKeycodes = [
 						$.ui.keyCode.ESCAPE,
 						$.ui.keyCode.ENTER,
@@ -1667,41 +1814,28 @@
 					if (!validKeycodes.includes(event.keyCode))
 						return;
 
-					const fakeEvent = $.Event(event);
-					fakeEvent.currentTarget = target[0];
-
-					this.close(fakeEvent, true);
+					closeTooltip(event);
 				},
-				//keyup: function (event) {
-				//	const fakeEvent = $.Event(event);
-				//	fakeEvent.currentTarget = target[0];
-				//	this.close(fakeEvent, true);
-				//},
-				click: async function (event) {
+				click: async (event) => {
 					await sleep();
-
-					const fakeEvent = $.Event(event);
-					fakeEvent.currentTarget = target[0];
-					if (fakeEvent.currentTarget.disabled)
-						this.close(fakeEvent, true);
-				}
+					closeTooltip(event);
+				},
 			};
 
 			// Only bind remove handler for delegated targets. Non-delegated
 			// tooltips will handle this in destroy.
 			if (target[0] !== this.element[0]) {
-				events.remove = function () {
+				events.remove = () => {
 					var targetElement = this._find(target);
-					if (targetElement) {
+					if (targetElement)
 						this._removeTooltip(targetElement.tooltip);
-					}
 				};
 			}
 
 			if (event && event.type === "mouseover")
-				events.mouseleave = "close";
+				events.mouseleave = () => { closeTooltip(event); };
 			if (event && event.type === "focusin")
-				events.focusout = "close";
+				events.focusout = () => { closeTooltip(event); };
 
 			this._on(true, target, events);
 		},

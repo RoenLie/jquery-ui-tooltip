@@ -41,7 +41,9 @@
 <body>
 
 <div class="container">
+	<p>Press space to delete button</p>
 	<button onclick="disableButton()">undisable</button>
+	<button onclick="removeButton()">remove</button>
 	<button id="testbutton" onclick="disableButton()" title="this is the button title">BUTTON</button>
 </div>
 
@@ -54,6 +56,15 @@ const disableButton = () => {
 	console.log('disabling');
 	document.getElementById('testbutton').toggleAttribute('disabled');
 }
+const removeButton = () => {
+	console.log('removing');
+	document.getElementById('testbutton').remove();
+}
+
+window.addEventListener('keyup', (ev) => {
+	if (ev.code === 'Space')
+		removeButton();
+})
 
 </script>
 </body>
