@@ -1,4 +1,4 @@
-/*! jQuery UI - v1.13.1 - 2022-04-01
+/*! jQuery UI - v1.13.2 - 2022-09-23
 * http://jqueryui.com
 * Includes: widget.js, position.js, keycode.js, unique-id.js, widgets/tooltip.js
 * Copyright jQuery Foundation and other contributors; Licensed MIT */
@@ -143,6 +143,7 @@ class DOMQuery {
 
 }
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 (function (factory) {
 	"use strict";
@@ -161,11 +162,11 @@ class DOMQuery {
 
 	$.ui = $.ui || {};
 
-	var version = $.ui.version = "1.13.1";
+	var version = $.ui.version = "1.13.2";
 
 
 	/*!
-	 * jQuery UI Widget 1.13.1
+	 * jQuery UI Widget 1.13.2
 	 * http://jqueryui.com
 	 *
 	 * Copyright jQuery Foundation and other contributors
@@ -907,7 +908,7 @@ class DOMQuery {
 
 
 	/*!
-	 * jQuery UI Position 1.13.1
+	 * jQuery UI Position 1.13.2
 	 * http://jqueryui.com
 	 *
 	 * Copyright jQuery Foundation and other contributors
@@ -1404,7 +1405,7 @@ class DOMQuery {
 
 
 	/*!
-	 * jQuery UI Keycode 1.13.1
+	 * jQuery UI Keycode 1.13.2
 	 * http://jqueryui.com
 	 *
 	 * Copyright jQuery Foundation and other contributors
@@ -1439,7 +1440,7 @@ class DOMQuery {
 
 
 	/*!
-	 * jQuery UI Unique ID 1.13.1
+	 * jQuery UI Unique ID 1.13.2
 	 * http://jqueryui.com
 	 *
 	 * Copyright jQuery Foundation and other contributors
@@ -1477,7 +1478,7 @@ class DOMQuery {
 
 
 	/*!
-	 * jQuery UI Tooltip 1.13.1
+	 * jQuery UI Tooltip 1.13.2
 	 * http://jqueryui.com
 	 *
 	 * Copyright jQuery Foundation and other contributors
@@ -1494,10 +1495,9 @@ class DOMQuery {
 	//>>css.structure: ../../themes/base/tooltip.css
 	//>>css.theme: ../../themes/base/theme.css
 
-	const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 	$.widget("ui.tooltip", {
-		version: "1.13.1",
+		version: "1.13.2",
 		options: {
 			classes: {
 				"ui-tooltip": "ui-corner-all ui-widget-shadow"
@@ -1615,6 +1615,7 @@ class DOMQuery {
 		},
 
 		_enable: function () {
+
 			// restore title attributes
 			this.disabledTitles.each(function () {
 				var element = $(this);
