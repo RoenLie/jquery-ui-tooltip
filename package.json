@@ -4,15 +4,16 @@
 		"access": "public"
 	},
 	"title": "jQuery UI",
-	"description": "A curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library.",
-	"version": "1.13.10",
+	"description": "Tooltip forked from jQuery UI with several modifications.",
+	"version": "2.0.0",
 	"homepage": "http://jqueryui.com",
-	"author": {
-		"name": "jQuery Foundation and other contributors",
-		"url": "https://github.com/jquery/jquery-ui/blob/1.13.1/AUTHORS.txt"
-	},
 	"main": "jquery-ui.min.js",
 	"license": "MIT",
+	"files": [
+		"jquery-ui.min.js",
+		"jquery-ui.min.css",
+		"jquery-ui.structure.min.css"
+	],
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build"
