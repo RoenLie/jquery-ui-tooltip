@@ -1,4 +1,4 @@
-/*! jQuery UI - v1.13.2 - 2022-09-23
+/* jQuery UI
 * http://jqueryui.com
 * Includes: widget.js, position.js, keycode.js, unique-id.js, widgets/tooltip.js
 * Copyright jQuery Foundation and other contributors; Licensed MIT */
@@ -145,42 +145,13 @@ class DOMQuery {
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-(function (factory) {
-	"use strict";
-
-	if (typeof define === "function" && define.amd) {
-
-		// AMD. Register as an anonymous module.
-		define(["jquery"], factory);
-	} else {
-
-		// Browser globals
-		factory(jQuery);
-	}
-})(function ($) {
-	"use strict";
-
+function factory($) {
 	$.ui = $.ui || {};
 
-	var version = $.ui.version = "1.13.2";
-
-
-	/*!
-	 * jQuery UI Widget 1.13.2
+	/*
+	 * jQuery UI Widget
 	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
 	 */
-
-	//>>label: Widget
-	//>>group: Core
-	//>>description: Provides a factory for creating stateful widgets with a common API.
-	//>>docs: http://api.jqueryui.com/jQuery.widget/
-	//>>demos: http://jqueryui.com/widget/
-
-
 	var widgetUuid = 0;
 	var widgetHasOwnProperty = Array.prototype.hasOwnProperty;
 	var widgetSlice = Array.prototype.slice;
@@ -904,28 +875,11 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 		};
 	});
 
-	var widget = $.widget;
-
-
 	/*!
-	 * jQuery UI Position 1.13.2
+	 * jQuery UI Position
 	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 *
-	 * http://api.jqueryui.com/position/
 	 */
-
-	//>>label: Position
-	//>>group: Core
-	//>>description: Positions elements relative to other elements.
-	//>>docs: http://api.jqueryui.com/position/
-	//>>demos: http://jqueryui.com/position/
-
-
-	(function () {
+	function positionFactory() {
 		var cachedScrollbarWidth,
 			max = Math.max,
 			abs = Math.abs,
@@ -1398,28 +1352,14 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 				}
 			}
 		};
+	}
+	positionFactory();
 
-	})();
-
-	var position = $.ui.position;
-
-
-	/*!
-	 * jQuery UI Keycode 1.13.2
+	/*
+	 * jQuery UI Keycode
 	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
 	 */
-
-	//>>label: Keycode
-	//>>group: Core
-	//>>description: Provide keycodes as keynames
-	//>>docs: http://api.jqueryui.com/jQuery.ui.keyCode/
-
-
-	var keycode = $.ui.keyCode = {
+	$.ui.keyCode = {
 		BACKSPACE: 8,
 		COMMA: 188,
 		DELETE: 46,
@@ -1439,22 +1379,11 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 	};
 
 
-	/*!
-	 * jQuery UI Unique ID 1.13.2
+	/*
+	 * jQuery UI Unique ID
 	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
 	 */
-
-	//>>label: uniqueId
-	//>>group: Core
-	//>>description: Functions to generate and remove uniqueId's
-	//>>docs: http://api.jqueryui.com/uniqueId/
-
-
-	var uniqueId = $.fn.extend({
+	$.fn.extend({
 		uniqueId: (function () {
 			var uuid = 0;
 
@@ -1477,27 +1406,11 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 	});
 
 
-	/*!
-	 * jQuery UI Tooltip 1.13.2
+	/*
+	 * jQuery UI Tooltip
 	 * http://jqueryui.com
-	 *
-	 * Copyright jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
 	 */
-
-	//>>label: Tooltip
-	//>>group: Widgets
-	//>>description: Shows additional information for any element on hover or focus.
-	//>>docs: http://api.jqueryui.com/tooltip/
-	//>>demos: http://jqueryui.com/tooltip/
-	//>>css.structure: ../../themes/base/core.css
-	//>>css.structure: ../../themes/base/tooltip.css
-	//>>css.theme: ../../themes/base/theme.css
-
-
 	$.widget("ui.tooltip", {
-		version: "1.13.2",
 		options: {
 			classes: {
 				"ui-tooltip": "ui-corner-all ui-widget-shadow"
@@ -1987,25 +1900,7 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 			this.liveRegion.remove();
 		}
 	});
+}
 
-	// DEPRECATED
-	// TODO: Switch return back to widget declaration at top of file when this is removed
-	if ($.uiBackCompat !== false) {
 
-		// Backcompat for tooltipClass option
-		$.widget("ui.tooltip", $.ui.tooltip, {
-			options: {
-				tooltipClass: null
-			},
-			_tooltip: function () {
-				var tooltipData = this._superApply(arguments);
-				if (this.options.tooltipClass) {
-					tooltipData.tooltip.addClass(this.options.tooltipClass);
-				}
-				return tooltipData;
-			}
-		});
-	}
-
-	var widgetsTooltip = $.ui.tooltip;
-});
+factory(jQuery);
