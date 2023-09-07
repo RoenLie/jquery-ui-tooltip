@@ -5,7 +5,7 @@
 	},
 	"title": "jQuery UI",
 	"description": "Tooltip forked from jQuery UI with several modifications.",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"homepage": "http://jqueryui.com",
 	"main": "jquery-ui.min.js",
 	"license": "MIT",
@@ -18,10 +18,11 @@
 		"dev": "vite",
 		"build": "vite build"
 	},
-	"dependencies": {
-		"jquery": "^3.7.1"
+	"peerDependencies": {
+		"jquery": "^3.6.0"
 	},
 	"devDependencies": {
+		"jquery": "^3.6.0",
 		"vite": "^4.4.9"
 	},
 	"keywords": []
